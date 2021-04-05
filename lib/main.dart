@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'sqlite/home.dart';
+import 'sqlite/spare.dart';
 
 void main() {
   runApp(MyApp());
@@ -15,7 +15,27 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Home(),
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Home'),
+        ),
+        body: Column(
+          children: [
+            Card(
+              child: RaisedButton(
+                child: Text('SPARE PART'),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Spare()),
+                  );
+                },
+              ),
+            ),
+            Card(),
+          ],
+        ),
+      ),
     );
   }
 }

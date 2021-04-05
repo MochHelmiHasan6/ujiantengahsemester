@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:uts/item.dart';
 import 'dart:async';
 import 'dbhelper.dart';
-import 'entryForm.dart';
-import '../item.dart';
+import 'formSupplier.dart';
+import '../supplier.dart';
 
 //pendukung program asinkron
-class Home extends StatefulWidget {
+class Sup extends StatefulWidget {
   @override
-  HomeState createState() => HomeState();
+  SupState createState() => SupState();
 }
 
-class HomeState extends State<Home> {
+class SupState extends State<Sup> {
   DbHelper dbHelper = DbHelper();
   int count = 0;
-  List<Item> itemList;
+  List<Supplier> supList;
   @override
   Widget build(BuildContext context) {
-    if (itemList == null) {
-      itemList = List<Item>();
+    if (supList == null) {
+      supList = List<Supplier>();
     }
     return Scaffold(
       appBar: AppBar(
@@ -35,9 +36,9 @@ class HomeState extends State<Home> {
             child: RaisedButton(
               child: Text("Tambah Item"),
               onPressed: () async {
-                var item = await navigateToEntryForm(context, null);
-                if (item != null) {
-                  int result = await dbHelper.insert(item);
+                var supplier = await navigateToEntryForm(context, null);
+                if (supplier != null) {
+                  int result = await dbHelper.insertSupplier(supplier);
                   if (result > 0) {
                     updateListView();
                   }
@@ -51,16 +52,18 @@ class HomeState extends State<Home> {
   }
 
   //Navigasi rute untuk menuju Form pengisian data
-  Future<Item> navigateToEntryForm(BuildContext context, Item item) async {
+  Future<Supplier> navigateToEntryForm(
+      BuildContext context, Supplier supplier) async {
     var result = await Navigator.push(context,
         MaterialPageRoute(builder: (BuildContext context) {
-      return EntryForm(item);
+      return FormSupplier(supplier);
     }));
     return result;
   }
 
-  //digunakan untuk membuat List Item
+  //digunakan untuk membuat List Supplier
   ListView createListView() {
+    updateListView();
     TextStyle textStyle = Theme.of(context).textTheme.headline5;
     return ListView.builder(
       itemCount: count,
@@ -74,21 +77,23 @@ class HomeState extends State<Home> {
               child: Icon(Icons.ad_units),
             ),
             title: Text(
-              this.itemList[index].name,
+              this.supList[index].nameSup,
               style: textStyle,
             ),
-            subtitle: Text(this.itemList[index].price.toString()),
+            subtitle: Text(
+              this.supList[index].noTelp,
+            ),
             trailing: GestureDetector(
               child: Icon(Icons.delete),
               onTap: () async {
-                dbHelper.delete(this.itemList[index].id);
+                dbHelper.deleteSupplier(this.supList[index].idSup);
                 updateListView();
               },
             ),
             onTap: () async {
-              var item =
-                  await navigateToEntryForm(context, this.itemList[index]);
-              int result = await dbHelper.update(item);
+              var supplier =
+                  await navigateToEntryForm(context, this.supList[index]);
+              int result = await dbHelper.updateSupplier(supplier);
               if (result > 0) {
                 updateListView();
               }
@@ -99,15 +104,15 @@ class HomeState extends State<Home> {
     );
   }
 
-  //digunakan untuk update List item
+  //digunakan untuk update List supplier
   void updateListView() {
     final Future<Database> dbFuture = dbHelper.initDb();
     dbFuture.then((database) {
-      Future<List<Item>> itemListFuture = dbHelper.getItemList();
-      itemListFuture.then((itemList) {
+      Future<List<Supplier>> supListFuture = dbHelper.getSupplierList();
+      supListFuture.then((supList) {
         setState(() {
-          this.itemList = itemList;
-          this.count = itemList.length;
+          this.supList = supList;
+          this.count = supList.length;
         });
       });
     });

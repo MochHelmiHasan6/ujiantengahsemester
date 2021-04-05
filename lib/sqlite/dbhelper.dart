@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import '../item.dart';
+import '../supplier.dart';
 
 class DbHelper {
   static DbHelper _dbHelper;
@@ -11,65 +12,124 @@ class DbHelper {
   Future<Database> initDb() async {
     //untuk menentukan nama database dan lokasi yg dibuat
     Directory directory = await getApplicationDocumentsDirectory();
-    String path = directory.path + 'item.db';
+    String path = directory.path + 'sparepart.db';
+
     //membuat dan membaca database
-    var itemDatabase = openDatabase(path, version: 4, onCreate: _createDb);
+    var database = openDatabase(path,
+        version: 4, onCreate: _createDb, onUpgrade: _onUpgrade);
 
     //mengembalikan nilai object sebagai hasil dari fungsinya
-    return itemDatabase;
+    return database;
+  }
+
+  //update tabel baru
+  void _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    _createDb(db, newVersion);
   }
 
   //buat tabel baru dengan nama item
   void _createDb(Database db, int version) async {
-    await db.execute('''
- CREATE TABLE item (
- id INTEGER PRIMARY KEY AUTOINCREMENT,
- name TEXT,
- kategori TEXT,
- price INTEGER,
- stok INTEGER
- )
- ''');
+    var batch = db.batch();
+    batch.execute('DROP TABLE IF EXIST item');
+    batch.execute('DROP TABLE IF EXIST supplier');
+    batch.execute('''
+      CREATE TABLE item (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT,
+      kategori TEXT,
+      price INTEGER,
+      stok INTEGER
+      )
+    ''');
+    batch.execute('''
+      CREATE TABLE supplier (
+      idSup INTEGER PRIMARY KEY AUTOINCREMENT,
+      nameSup TEXT,
+      alamat TEXT,
+      noTelp TEXT
+      )
+    ''');
+    await batch.commit();
   }
 
-  //select databases
-  Future<List<Map<String, dynamic>>> select() async {
+  //select databases table item
+  Future<List<Map<String, dynamic>>> selectItem() async {
     Database db = await this.initDb();
-    var mapList = await db.query('item', orderBy: 'name');
+    var mapList = await db.query('item', orderBy: 'kategori');
     return mapList;
   }
 
-  //create databases
-  Future<int> insert(Item object) async {
+  //select databases table supplier
+  Future<List<Map<String, dynamic>>> selectSupplier() async {
+    Database db = await this.initDb();
+    var mapList = await db.query('supplier', orderBy: 'nameSup');
+    return mapList;
+  }
+
+  //create databases table item
+  Future<int> insertItem(Item object) async {
     Database db = await this.initDb();
     int count = await db.insert('item', object.toMap());
     return count;
   }
 
-  //update databases
-  Future<int> update(Item object) async {
+  //create databases table supplier
+  Future<int> insertSupplier(Supplier object) async {
+    Database db = await this.initDb();
+    int count = await db.insert('supplier', object.toMap());
+    return count;
+  }
+
+  //update databases table item
+  Future<int> updateItem(Item object) async {
     Database db = await this.initDb();
     int count = await db
         .update('item', object.toMap(), where: 'id=?', whereArgs: [object.id]);
     return count;
   }
 
-  //delete databases
-  Future<int> delete(int id) async {
+  //update databases table supplier
+  Future<int> updateSupplier(Supplier object) async {
+    Database db = await this.initDb();
+    int count = await db.update('supplier', object.toMap(),
+        where: 'idSup=?', whereArgs: [object.idSup]);
+    return count;
+  }
+
+  //delete databases table item
+  Future<int> deleteItem(int id) async {
     Database db = await this.initDb();
     int count = await db.delete('item', where: 'id=?', whereArgs: [id]);
     return count;
   }
 
+  //delete databases table supplier
+  Future<int> deleteSupplier(int id) async {
+    Database db = await this.initDb();
+    int count = await db.delete('supplier', where: 'idSup=?', whereArgs: [id]);
+    return count;
+  }
+
   //menambahkan data kedalam list
   Future<List<Item>> getItemList() async {
-    var itemMapList = await select();
+    var itemMapList = await selectItem();
     int count = itemMapList.length;
     List<Item> itemList = List<Item>();
     for (int i = 0; i < count; i++) {
       itemList.add(Item.fromMap(itemMapList[i]));
     }
     return itemList;
+  }
+
+  //menambahkan data kedalam list
+  Future<List<Supplier>> getSupplierList() async {
+    var supplierMapList = await selectSupplier();
+    int count = supplierMapList.length;
+    List<Supplier> supplierList = List<Supplier>();
+    for (int i = 0; i < count; i++) {
+      supplierList.add(Supplier.fromMap(supplierMapList[i]));
+    }
+    return supplierList;
   }
 
   factory DbHelper() {
