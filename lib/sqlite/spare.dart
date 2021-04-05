@@ -33,7 +33,7 @@ class SpareState extends State<Spare> {
           child: SizedBox(
             width: double.infinity,
             child: RaisedButton(
-              child: Text("Tambah Item"),
+              child: Text("Tambah Data Spare Part"),
               onPressed: () async {
                 var item = await navigateToEntryForm(context, null);
                 if (item != null) {
@@ -52,10 +52,14 @@ class SpareState extends State<Spare> {
 
   //Navigasi rute untuk menuju Form pengisian data
   Future<Item> navigateToEntryForm(BuildContext context, Item item) async {
-    var result = await Navigator.push(context,
-        MaterialPageRoute(builder: (BuildContext context) {
-      return EntryForm(item);
-    }));
+    var result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext context) {
+          return EntryForm(item);
+        },
+      ),
+    );
     return result;
   }
 

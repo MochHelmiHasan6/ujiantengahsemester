@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:uts/item.dart';
 import 'dart:async';
 import 'dbhelper.dart';
 import 'formSupplier.dart';
@@ -23,7 +22,7 @@ class SupState extends State<Sup> {
     }
     return Scaffold(
       appBar: AppBar(
-        title: Text('Daftar Spare Part'),
+        title: Text('Daftar Supplier'),
       ),
       body: Column(children: [
         Expanded(
@@ -34,7 +33,7 @@ class SupState extends State<Sup> {
           child: SizedBox(
             width: double.infinity,
             child: RaisedButton(
-              child: Text("Tambah Item"),
+              child: Text("Tambah Data Supplier"),
               onPressed: () async {
                 var supplier = await navigateToEntryForm(context, null);
                 if (supplier != null) {
@@ -54,10 +53,14 @@ class SupState extends State<Sup> {
   //Navigasi rute untuk menuju Form pengisian data
   Future<Supplier> navigateToEntryForm(
       BuildContext context, Supplier supplier) async {
-    var result = await Navigator.push(context,
-        MaterialPageRoute(builder: (BuildContext context) {
-      return FormSupplier(supplier);
-    }));
+    var result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext context) {
+          return FormSupplier(supplier);
+        },
+      ),
+    );
     return result;
   }
 

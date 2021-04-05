@@ -20,19 +20,19 @@ class Supplier {
 
   //mengkonversi Map ke Item digunakan untuk menampung baris data dari tabel database
   Supplier.fromMap(Map<String, dynamic> map) {
-    this._idSup = map['id'];
+    this._idSup = map['idSup'];
     this._nameSup = map['nameSup'];
     this._alamat = map['alamat'];
     this._noTelp = map['noTelp'];
   }
 
   //mengkonversi Item ke Map digunakan untuk memasukkan data ke dalam tabel
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMapSup() {
     Map<String, dynamic> map = Map<String, dynamic>();
-    map['id'] = this._idSup;
-    map['name'] = nameSup;
-    map['kategori'] = alamat;
-    map['price'] = noTelp;
+    map['idSup'] = this._idSup;
+    map['nameSup'] = nameSup;
+    map['alamat'] = alamat;
+    map['noTelp'] = noTelp;
     return map;
   }
 }

@@ -16,7 +16,7 @@ class DbHelper {
 
     //membuat dan membaca database
     var database = openDatabase(path,
-        version: 4, onCreate: _createDb, onUpgrade: _onUpgrade);
+        version: 6, onCreate: _createDb, onUpgrade: _onUpgrade);
 
     //mengembalikan nilai object sebagai hasil dari fungsinya
     return database;
@@ -30,8 +30,8 @@ class DbHelper {
   //buat tabel baru dengan nama item
   void _createDb(Database db, int version) async {
     var batch = db.batch();
-    batch.execute('DROP TABLE IF EXIST item');
-    batch.execute('DROP TABLE IF EXIST supplier');
+    batch.execute('DROP TABLE IF EXISTS item');
+    batch.execute('DROP TABLE IF EXISTS supplier');
     batch.execute('''
       CREATE TABLE item (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -74,9 +74,9 @@ class DbHelper {
   }
 
   //create databases table supplier
-  Future<int> insertSupplier(Supplier object) async {
+  Future<int> insertSupplier(Supplier sup) async {
     Database db = await this.initDb();
-    int count = await db.insert('supplier', object.toMap());
+    int count = await db.insert('supplier', sup.toMapSup());
     return count;
   }
 
@@ -89,10 +89,10 @@ class DbHelper {
   }
 
   //update databases table supplier
-  Future<int> updateSupplier(Supplier object) async {
+  Future<int> updateSupplier(Supplier sup) async {
     Database db = await this.initDb();
-    int count = await db.update('supplier', object.toMap(),
-        where: 'idSup=?', whereArgs: [object.idSup]);
+    int count = await db.update('supplier', sup.toMapSup(),
+        where: 'idSup=?', whereArgs: [sup.idSup]);
     return count;
   }
 

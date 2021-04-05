@@ -44,7 +44,7 @@ class FormSupplierState extends State<FormSupplier> {
                 controller: nameSupController,
                 keyboardType: TextInputType.text,
                 decoration: InputDecoration(
-                  labelText: 'Nama Spare Part',
+                  labelText: 'Nama Supplier',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(5.0),
                   ),
